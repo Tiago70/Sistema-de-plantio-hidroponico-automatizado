@@ -17,10 +17,12 @@ response Bomb::controller(int action_code){
   switch(action_code){
     case 1:
       digitalWrite(this->pin, HIGH);
+      strcpy(response_data.message, "OK");
       return response_data;
 
     case 0:
       digitalWrite(this->pin, LOW);
+      strcpy(response_data.message, "OK");
       return response_data;
 
     case -1:

@@ -10,8 +10,8 @@ void read_buffer(char* buffer, uint8_t length){
 void write_buffer(response data){
   Serial.print(data.status_code);
 
-  if (data.message != ""){
-    Serial.print(" ");
+  if (strcmp(data.message, "")){
+    Serial.print("=");
     Serial.print(data.message);
   }
   Serial.println();
