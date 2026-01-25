@@ -1,6 +1,6 @@
 """
 Código responsável por tratar qualquer erro que ocorrer
-no serial, padronizar o retorno das mensagens recebida
+no serial, padronizar o retorno das mensagens recebidas
 do arduino e garantir a atomicidade do acesso ao Serial. 
 """
 from arduinoSerial.ioserial import IoSerial
@@ -24,15 +24,17 @@ class SerialService():
         self.serial = serial
         self.locking = Lock()
 
-    def get_data(self, module_code: str, action: str | None = '') -> Response:
+    def get_data(self, module_code: str, action: str = '') -> Response:
         with self.locking:
             try:
                 message = module_code
                 if action:
                     message = message + f' {action}'
-                self.serial.send(f'{module_code}\n'.encode('utf-8'))
+
+                self.serial.send(f'{message}\n'.encode('utf-8'))
                 data = self.serial.get()
                 return Response(ok=True, payload=data, error=None)
+
             except HydroponicsException as e:
                 type = e.__class__.__name__
                 message_error = e.__str__()

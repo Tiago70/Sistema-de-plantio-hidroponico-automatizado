@@ -75,7 +75,7 @@ class IoSerial:
                 raise ArduinoCommunicationException("Without connection to the Arduino")
 
         self._validate_response(arduino_response)
-        #  e tudo ocorrer bem separa o código de status da mensagem e retorna a mensagem
+        # se tudo ocorrer bem separa o código de status da mensagem e retorna a mensagem
         message = arduino_response.split('=')[1]
         return message.replace('\n', '')
 
