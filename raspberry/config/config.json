@@ -1,0 +1,7 @@
+{
+    "serial":{
+        "port": "/dev/ttyACM0",
+        "speed": 9600,
+        "timeout": 2
+    }
+}

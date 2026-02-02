@@ -1,6 +1,7 @@
 import pytest
 from unittest.mock import Mock
-from arduinoSerial.ioserial import IoSerial 
+from arduinoSerial.ioserial import IoSerial
+from config.schemaControl import Configuration
 
 @pytest.fixture
 def fake_serial_connection():
@@ -21,3 +22,48 @@ def fake_serial_connection():
 def fake_ioserial(fake_serial_connection):
     """ Fixture para testes que usam o ioserial """
     return IoSerial(fake_serial_connection)
+
+@pytest.fixture
+def fake_dataclass():
+    """ Fixture para o dataclass dos módulos """
+    test_data = {
+        "temperature": {
+            "code": "T",
+            "intervals": 200,
+            "levels":{
+                "max": 30,
+                "min": 10
+            },
+            "actions":{
+                "get_value": ""
+            }
+        },
+        "conductivity": {
+            "code": "C",
+            "intervals": 200,
+            "levels":{
+                "max": 2,
+                "min": 0.1
+            },
+            "actions":{
+                "get_value": ""
+            }
+        },
+        "water_pump": {
+            "code": "B",
+            "intervals": 300,
+            "actions":{
+                "get_value": "",
+                "on": "1",
+                "off": 0
+            }
+        },
+        "clock": {
+            "code": "R",
+            "actions":{
+                "get_value": ""
+            }
+        }
+    }
+
+    return Configuration(**test_data)
