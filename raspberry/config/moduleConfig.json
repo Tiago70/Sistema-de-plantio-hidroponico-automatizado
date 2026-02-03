@@ -1,5 +1,6 @@
 {
     "temperature": {
+        "name": "temperature",
         "code": "T",
         "intervals": 1000,
         "levels": {
@@ -11,6 +12,7 @@
         }
     },
     "conductivity": {
+        "name": "conductivity",
         "code": "C",
         "intervals": 500,
         "levels": {
@@ -22,6 +24,7 @@
         }
     },
     "water_pump": {
+        "name": "water_pump",
         "code": "B",
         "intervals": 250,
         "actions": {
@@ -31,6 +34,7 @@
         }
     },
     "clock": {
+        "name": "clock",
         "code": "R",
         "actions": {
             "get_value": ""

@@ -13,6 +13,7 @@ class Values:
 
 @dataclass
 class Attributes:
+    name: str
     simbol: str
     intervals: list[int] | None
     levels: Values | None

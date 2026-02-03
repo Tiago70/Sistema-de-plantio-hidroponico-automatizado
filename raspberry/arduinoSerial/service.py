@@ -24,7 +24,7 @@ class SerialService():
         self.serial = serial
         self.locking = Lock()
 
-    def get_data(self, module_code: str, action: str = '') -> Response:
+    def execute_command(self, module_code: str, action: str = '') -> Response:
         with self.locking:
             try:
                 message = module_code

@@ -28,42 +28,46 @@ def fake_dataclass():
     """ Fixture para o dataclass dos módulos """
     test_data = {
         "temperature": {
+            "name": "temperature",
             "code": "T",
-            "intervals": 200,
-            "levels":{
+            "intervals": 1000,
+            "levels": {
                 "max": 30,
                 "min": 10
             },
-            "actions":{
+            "actions": {
                 "get_value": ""
             }
         },
         "conductivity": {
+            "name": "conductivity",
             "code": "C",
-            "intervals": 200,
-            "levels":{
+            "intervals": 500,
+            "levels": {
                 "max": 2,
                 "min": 0.1
             },
-            "actions":{
+            "actions": {
                 "get_value": ""
             }
         },
         "water_pump": {
+            "name": "water_pump",
             "code": "B",
-            "intervals": 300,
-            "actions":{
+            "intervals": 250,
+            "actions": {
                 "get_value": "",
                 "on": "1",
                 "off": 0
             }
         },
         "clock": {
+            "name": "clock",
             "code": "R",
-            "actions":{
+            "actions": {
                 "get_value": ""
             }
         }
-    }
+        }
 
     return Configuration(**test_data)

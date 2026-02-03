@@ -12,17 +12,17 @@ class TestSerialService:
         assert service.serial == fake_ioserial
         assert service.locking != None
 
-    def test_get_data_must_return_ok(self, serialservice):
-        response = serialservice.get_data('B')
+    def test_execute_command_must_return_ok(self, serialservice):
+        response = serialservice.execute_command('B')
         assert response.ok == True
         assert response.payload == 'OK'
         assert response.error == None
 
-    def test_get_data_must_return_an_error(self, fake_ioserial):
+    def test_execute_command_must_return_an_error(self, fake_ioserial):
         fake_ioserial.arduino.readline.return_value = b'0=Example of an error message\n'
         service = SerialService(fake_ioserial)
 
-        response = service.get_data('B')
+        response = service.execute_command('B')
         assert response.ok == False
         assert response.payload == 'An error occurred during serial communication '
         assert response.error.type == 'ArduinoCommunicationException'
