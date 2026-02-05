@@ -1,6 +1,8 @@
 import pytest
 from unittest.mock import Mock
+
 from arduinoSerial.ioserial import IoSerial
+from arduinoSerial.service import SerialService
 from config.schemaControl import Configuration
 
 @pytest.fixture
@@ -22,6 +24,11 @@ def fake_serial_connection():
 def fake_ioserial(fake_serial_connection):
     """ Fixture para testes que usam o ioserial """
     return IoSerial(fake_serial_connection)
+
+@pytest.fixture
+def fake_serialservice(fake_ioserial):
+    """ Fixture para testes que usam o serial service """
+    return SerialService(fake_ioserial)
 
 @pytest.fixture
 def fake_dataclass():

@@ -14,7 +14,7 @@ class Values:
 @dataclass
 class Attributes:
     name: str
-    simbol: str
+    code: str
     intervals: list[int] | None
     levels: Values | None
     actions: dict
