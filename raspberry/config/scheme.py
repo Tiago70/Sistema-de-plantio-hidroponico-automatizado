@@ -15,7 +15,7 @@ class Values:
 class Attributes:
     name: str
     code: str
-    intervals: list[int] | None
+    intervals: list[int]
     levels: Values | None
     actions: dict
 

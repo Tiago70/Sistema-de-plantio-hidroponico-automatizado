@@ -37,7 +37,7 @@ def fake_dataclass():
         "temperature": {
             "name": "temperature",
             "code": "T",
-            "intervals": 1000,
+            "intervals": [1000],
             "levels": {
                 "max": 30,
                 "min": 10
@@ -49,7 +49,7 @@ def fake_dataclass():
         "conductivity": {
             "name": "conductivity",
             "code": "C",
-            "intervals": 500,
+            "intervals": [500],
             "levels": {
                 "max": 2,
                 "min": 0.1
@@ -61,7 +61,7 @@ def fake_dataclass():
         "water_pump": {
             "name": "water_pump",
             "code": "B",
-            "intervals": 250,
+            "intervals": [250, 100],
             "actions": {
                 "get_value": "",
                 "on": "1",
