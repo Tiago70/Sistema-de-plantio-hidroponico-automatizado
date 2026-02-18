@@ -1,73 +1,130 @@
-from unittest.mock import Mock, MagicMock, patch
-from schedules.schedule import Schedule, Job
-from pytest import fixture
+import pytest
+import asyncio
+from unittest.mock import Mock, AsyncMock
 
-@fixture
-def fake_schedule():
-    fake_checker = Mock()
-    fake_checker.run.return_value = None
-    return Schedule(fake_checker)
+from schedules.schedule import TaskControl, JobData, Jobs, Schedule
+
+class TestTaskControl:
+    @pytest.mark.asyncio
+    async def test_constructor(self):
+        task_control = TaskControl()
+        assert task_control.task is None
+
+    @pytest.mark.asyncio
+    async def test_start_and_stop(self):
+        task_control = TaskControl()
+
+        async def fake_coro():
+            await asyncio.sleep(0.01)
+
+        task_control.start(fake_coro())
+
+        assert task_control.task is not None
+        assert not task_control.task.done()
+
+        await task_control.stop()
+
+        assert task_control.task is None
+
+class TestJobData:
+    def test_constructor(self):
+        job = JobData("1", [1, 2, 3], False)
+
+        assert job.command == "1"
+        assert job.intervals == [1, 2, 3]
+        assert job.is_linked is False
+        assert job.task is None
+        assert job.current_interval_index == 0
+        assert job.last_run == 0
+
+    def test_get_next_interval(self):
+        job = JobData("1", [1, 2], False)
+
+        assert job.get_next_interval() == 1
+        assert job.current_interval_index == 1
+
+        assert job.get_next_interval() == 2
+        assert job.current_interval_index == 0  # loop circular
+
+    def test_update_interval(self):
+        job = JobData("1", [1, 2], False)
+        job.current_interval_index = 1
+
+        job.update_interval([5, 6])
+
+        assert job.intervals == [5, 6]
+        assert job.current_interval_index == 0
+
+    def test_get_diff_interval(self):
+        job = JobData("1", [10], False)
+
+        job.last_run = 0
+        diff = job.get_diff_interval()
+
+        assert diff >= 0  # nunca negativo
+
+class TestJobs:
+    def test_constructor(self):
+        jobs = Jobs()
+        assert jobs.related_jobs == []
+
+    def test_filter_jobs(self):
+        j1 = JobData("A", [1], True)
+        j2 = JobData("B", [1], False)
+        j3 = JobData("C", [1], True)
+
+        jobs = Jobs([j1, j2, j3])
+
+        linked = jobs.filter_jobs(True)
+        unlinked = jobs.filter_jobs(False)
+
+        assert len(linked) == 2
+        assert len(unlinked) == 1
+        assert unlinked[0].command == "B"
 
 class TestSchedule:
-    def test_contructor(self):
-        """ Testa o contrutor da classe """
-        fake_checker = Mock()
-        schedule = Schedule(fake_checker)
+    def test_constructor(self):
+        checker = Mock()
+        schedule = Schedule(checker)
 
-        assert schedule.checker == fake_checker
+        assert schedule.checker == checker
         assert schedule.jobs == {}
-        assert schedule.tasks == {}
 
-    def test_new_job(self, fake_schedule):
-        """ Testa se a função está criando, guardando e iniciado novos trabalhos """
-        fake_schedule._start_new_task = Mock()
-        fake_schedule.new_job('B', ['1', '0'], [100, 50])
+    def test_new_job(self):
+        checker = Mock()
+        schedule = Schedule(checker)
 
-        assert fake_schedule.jobs.get('B') != None
-        fake_schedule._start_new_task.assert_called_once()
+        schedule.new_job("B", "1", [1, 2], False)
 
-    def test_start_new_task(self, fake_schedule):
-        """ Testa se está criando uma nova tarefa """
-        # auxiliares para engolir a corotina quando 
-        # chamada pelo create_task
-        fake_task = MagicMock()
-        def fake_task(coro):
-            coro.close()
-            return fake_task
+        assert "B" in schedule.jobs
+        assert len(schedule.jobs["B"].related_jobs) == 1
 
-        with patch("asyncio.create_task", side_effect=fake_task) as mock_create_task:
-            # adiciona um novo trabalho ao mesmo tempo que cria uma task
-            fake_schedule._start_new_task(
-                Job(
-                    module_code='B',
-                    commands=['1', '0'],
-                    intervals=[100, 50])
-                )
+    @pytest.mark.asyncio
+    async def test_update_job_interval_non_linked(self):
+        checker = Mock()
+        schedule = Schedule(checker)
 
-            # verifica se as funções para criar a task foi chamada
-            mock_create_task.assert_called_once()
+        schedule.new_job("T", "0", [1], False)
+        job = schedule.jobs["T"].related_jobs[0]
 
-            # verifica se a task foi guardada
-            assert fake_schedule.tasks.get('B') != None
-            assert fake_schedule.tasks.get('B') == fake_task
+        # mock task control
+        job.task = TaskControl()
+        job.task.start(asyncio.sleep(0.01))
 
-    def test_update_job_interval(self, fake_schedule):
-        """ Testa se está atualizando o intervalo e se está atualizando a task """
-        # iniciando dados fake
-        task = Mock()
-        job = Job(module_code='T', commands=[''], intervals=[100])
+        response = await schedule.update_job_interval(
+            "T", "0", [5]
+        )
 
-        fake_schedule.jobs['T'] = job
-        fake_schedule.tasks['T'] = task
-        fake_schedule._start_new_task = Mock()
+        assert response.ok is True
+        assert job.intervals == [5]
 
-        # atualizando intervalo para 50
-        status_code = fake_schedule.update_job_interval('T', [50])
-        assert status_code == True
+    @pytest.mark.asyncio
+    async def test_update_job_not_found(self):
+        checker = Mock()
+        schedule = Schedule(checker)
 
-        # verificando se alterou o intervalo e se atualizou a task
-        assert job.intervals[0] == 50
-        task.cancel.assert_called_once()
-        fake_schedule._start_new_task.assert_called_once()
+        response = await schedule.update_job_interval(
+            "T", "", [5]
+        )
 
-        # pendente: teste do loop de verificação
+        assert response.ok is False

@@ -79,10 +79,10 @@ class IoSerial:
         message = arduino_response.split('=')[1]
         return message.replace('\n', '')
 
-    def send(self, message: bytes):
+    def send(self, message: str):
         try:
             self.arduino.reset_input_buffer()
-            self.arduino.write(message)
+            self.arduino.write(f'{message}\n'.encode('utf-8'))
         except serial.SerialException as e:
             if not self._reconnect():
                 raise ArduinoCommunicationException("Without connection to the Arduino")

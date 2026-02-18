@@ -3,8 +3,8 @@ Código responsável por verificar os dados retornados pelo
 serial
 
 Deve lançar avisos ou erros para o notificador caso o valor
-dos sensores estejam muito alto, baixo ou se der um erro
-na comunicação
+dos sensores estejam muito alto, baixo ou se retornar um
+erro na comunicação
 """
 
 from arduinoSerial.service import SerialService
@@ -17,20 +17,29 @@ class Checker:
         self.modules = modules
         self.notifier = notifier
 
-    def run(self, module_code:str, command:str):        
-        response = self.serial.execute_command(module_code, command)
+    def _is_measurable(self, value: str) -> bool:
+        # possível bug com o comando de consultar a bomba
+        # de água, pois o comando retorna 1 ou 0
+        # Caso o agendador um dia venha chamar este comando,
+        # fazer uma modificação aqui e talvez na estrutura dos dados
+        try:
+            float(value)
+            return True
+        except ValueError:
+            return False
+
+    async def run(self, module_code:str, command:str) -> None:        
+        response = await self.serial.execute_command(module_code, command)
         if not response.ok:
             self.notifier.emit(
                 Notification(
-                    message=f'{response.error.type}:{response.error.cause}',
+                    message=f'{response.error.err_type}:{response.error.cause}',
                     type=NotificationType.ERROR
                     )
                 )
             return
 
-        if (module_code == self.modules.temperature.get('code') or
-                module_code == self.modules.conductivity.get('code')) :
-
+        if self._is_measurable(response.payload):
             self.check_value(module_code, float(response.payload))
     
     def check_value(self, module_code:str, value: float):
