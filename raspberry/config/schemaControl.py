@@ -25,7 +25,7 @@ class SchemaControl:
             module.get('levels').update({'min': new_value})
             update(CONFIGPATH, self.dataclass.get_as_dict())
 
-    def set_interval(self, module_code:str, new_value: int):
+    def set_interval(self, module_code:str, new_value: [int]):
         module = self.dataclass.get_module(module_code)
         if module is not None:
             module.update({'intervals': new_value})

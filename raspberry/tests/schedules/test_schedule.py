@@ -4,6 +4,13 @@ from unittest.mock import Mock, AsyncMock
 
 from schedules.schedule import TaskControl, JobData, Jobs, Schedule
 
+@pytest.fixture
+def schedule():
+    checker = AsyncMock()
+    schedule = Schedule(checker)
+
+    return schedule
+
 class TestTaskControl:
     @pytest.mark.asyncio
     async def test_constructor(self):
@@ -90,20 +97,14 @@ class TestSchedule:
         assert schedule.checker == checker
         assert schedule.jobs == {}
 
-    def test_new_job(self):
-        checker = Mock()
-        schedule = Schedule(checker)
-
+    def test_new_job(self, schedule):
         schedule.new_job("B", "1", [1, 2], False)
 
         assert "B" in schedule.jobs
         assert len(schedule.jobs["B"].related_jobs) == 1
 
     @pytest.mark.asyncio
-    async def test_update_job_interval_non_linked(self):
-        checker = Mock()
-        schedule = Schedule(checker)
-
+    async def test_update_job_interval_non_linked(self, schedule):
         schedule.new_job("T", "0", [1], False)
         job = schedule.jobs["T"].related_jobs[0]
 
@@ -119,10 +120,7 @@ class TestSchedule:
         assert job.intervals == [5]
 
     @pytest.mark.asyncio
-    async def test_update_job_not_found(self):
-        checker = Mock()
-        schedule = Schedule(checker)
-
+    async def test_update_job_not_found(self, schedule):
         response = await schedule.update_job_interval(
             "T", "", [5]
         )

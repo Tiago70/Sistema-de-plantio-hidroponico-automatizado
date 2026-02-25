@@ -2,7 +2,9 @@ from pytest import fixture
 from config.schemaControl import SchemaControl
 
 @fixture
-def fake_schemacontrol(fake_dataclass):
+def fake_schemacontrol(fake_dataclass, monkeypatch, tmp_path):
+    print(SchemaControl.__name__)
+    monkeypatch.setattr("config.schemaControl.CONFIGPATH", tmp_path / 'test_moduleConfig.json')
     return SchemaControl(fake_dataclass)
 
 class TestSchemaControl:

@@ -9,10 +9,10 @@ alteração nos intervalos dos sensores
 
 from dataclasses import dataclass, field
 from typing import Coroutine
-from schemas.response import Response, Error
-from schedules.checker import Checker
 import time
 import asyncio
+from schemas.response import Response, Error
+from schedules.checker import Checker
 
 @dataclass
 class TaskControl:

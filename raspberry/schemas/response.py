@@ -1,4 +1,8 @@
-from dataclasses import dataclass, field
+from dataclasses import dataclass
+from typing import Optional
+
+# Melhorar a padronização interna com a externa
+# Este código irá causar muita confusão
 
 @dataclass(frozen=True)
 class Error:
@@ -9,4 +13,4 @@ class Error:
 class Response:
     ok: bool
     payload: str
-    error: Error | None = field(default=None)
+    error: Optional[Error] = None

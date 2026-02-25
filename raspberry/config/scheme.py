@@ -7,17 +7,11 @@ from dataclasses import dataclass, fields, asdict
 from typing import Any
 
 @dataclass
-class Values:
-    max: float
-    min: float
-
-@dataclass
 class Attributes:
     name: str
     code: str
-    intervals: list[int]
-    levels: Values | None
-    actions: dict
+    levels: dict[str, float] | None
+    actions: dict[str, str]
 
 @dataclass
 class Configuration:

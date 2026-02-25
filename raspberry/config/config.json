@@ -1,7 +1,12 @@
 {
-    "serial":{
+    "serial": {
         "port": "/dev/ttyACM0",
         "speed": 9600,
         "timeout": 2
+    },
+    "mqtt": {
+        "requests_topic": "",
+        "response_topic": "",
+        "notification_topic": ""
     }
 }

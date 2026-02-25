@@ -1,5 +1,4 @@
 from config.fileControl import update, read
-import json
 
 def test_update_and_read(tmp_path):
     """ Testa as funções de leitura e atualização do arquivo json """

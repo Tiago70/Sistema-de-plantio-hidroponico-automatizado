@@ -2,13 +2,15 @@
     "temperature": {
         "name": "temperature",
         "code": "T",
-        "intervals": 1000,
         "levels": {
             "max": 30,
             "min": 10
         },
         "actions": {
-            "get_value": ""
+            "get_value": {
+                "command": "",
+                "intervals": [100]
+            }
         }
     },
     "conductivity": {
@@ -20,24 +22,39 @@
             "min": 0.1
         },
         "actions": {
-            "get_value": ""
+            "get_value": {
+                "command": "",
+                "intervals": [500]
+            }
         }
     },
     "water_pump": {
         "name": "water_pump",
         "code": "B",
-        "intervals": 250,
+        "intervals": [250],
         "actions": {
-            "get_value": "",
-            "on": "1",
-            "off": 0
+            "get_value": {
+                "command": "",
+                "intervals": [100]
+            },
+            "on": {
+                "command": "1",
+                "intervals": [50, 70]
+            },
+            "off": {
+                "command": "0",
+                "intervals": [100, 150]
+            }
         }
     },
     "clock": {
         "name": "clock",
         "code": "R",
         "actions": {
-            "get_value": ""
+            "get_value": {
+                "command": "",
+                "intervals": []
+            }
         }
     }
 }
